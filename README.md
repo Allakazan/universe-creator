@@ -1,13 +1,21 @@
-# Welcome to Remix!
+# Universe Creator
 
 - 📖 [Remix docs](https://remix.run/docs)
 
 ## Development
 
+This project uses Yarn as a package management
+
+Install dependencies:
+
+```sh
+yarn install
+```
+
 Run the dev server:
 
-```shellscript
-npm run dev
+```sh
+yarn dev
 ```
 
 ## Deployment
@@ -15,13 +23,13 @@ npm run dev
 First, build your app for production:
 
 ```sh
-npm run build
+yarn build
 ```
 
 Then run the app in production mode:
 
 ```sh
-npm start
+yarn start
 ```
 
 Now you'll need to pick a host to deploy it to.
