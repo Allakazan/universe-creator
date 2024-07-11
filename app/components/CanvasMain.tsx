@@ -1,12 +1,13 @@
 import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
-import { CameraControls, Environment } from "@react-three/drei";
+import { CameraControls, Environment, Plane } from "@react-three/drei";
 import { useAtom } from "jotai";
 import { planetAtom } from "./atoms/planet.atom";
 import { Suspense, useEffect } from "react";
 import { PlanetType } from "~/interfaces/planet.interface";
 import { GasGiant } from "./planet/GasGiant";
 import { Dwarf } from "./planet/Dwarf";
+import { Star } from "./planet/Star";
 
 export default function CanvasMain() {
   const [planetData, setPlanetData] = useAtom(planetAtom);
@@ -17,6 +18,8 @@ export default function CanvasMain() {
         return <GasGiant id={id} />;
       case PlanetType.Dwarf:
         return <Dwarf id={id} />;
+      case PlanetType.Star:
+        return <Star id={id} />;
       default:
         return null;
     }
@@ -59,7 +62,7 @@ export default function CanvasMain() {
         )}
       />
       <ambientLight intensity={0.17} />
-      <pointLight position={[0, 30, 20]} decay={0.2} intensity={Math.PI} />
+      <pointLight position={[0, 0, 0]} decay={0.2} intensity={Math.PI} />
       <Suspense fallback={null}>
         {planetData.map(({ id, type }) => (
           <PlanetComponent key={id} id={id} type={type} />

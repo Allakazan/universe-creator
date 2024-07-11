@@ -52,7 +52,7 @@ void main() {
   vec3 color = mix(color1, color2, terrain);
 
   if (noiseTint) {
-    color = mix(color3, color, smoothstep(0., 1., getNoise(pos, seed, noiseParams2)));
+    color = mix(color3, color, smoothstep(0., 1., getNoise(pos, seed + 100., noiseParams2)));
   }
   
   vec3 normalMap = perturbNormalArb(pos, v_normal, seed, bumpStrength, noise1ParamsNormal);

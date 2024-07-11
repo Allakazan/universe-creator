@@ -19,7 +19,7 @@ export function PlanetBase({ uniforms, seed, position, fragment }: PlanetBasePro
   useFrame(({ camera, clock }, delta) => {
     if (!meshRef.current) return;
 
-    meshRef.current.rotation.y += delta * 0.1;
+    //meshRef.current.rotation.y += delta * 0.1;
     //meshRef.current.rotation.x += delta * 0.2;
 
     const material = meshRef.current.material as THREE.ShaderMaterial;

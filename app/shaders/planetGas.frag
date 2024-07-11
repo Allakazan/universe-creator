@@ -33,7 +33,7 @@ void main() {
   }
 
   vec3 turbulancePos = pos + (u_time * turbulanceWindForce);
-  float turbulance = getNoise(turbulancePos, seed, turbulanceParams);
+  float turbulance = getNoise(turbulancePos, seed + 200., turbulanceParams);
 
   vec3 terrainPos = pos + (turbulance * turbulanceStrength); // pos * or pos + ???
   float terrain = getNoise(terrainPos, seed, noiseParams);

@@ -28,11 +28,17 @@ export const planetAtom = atom<PlanetAtom[]>([
     type: PlanetType.GasGiant,
     seed: 9070,
     position: [-9, 0, -5],
-  },*/
+  },
   {
     id: ulid(),
     type: PlanetType.Dwarf,
     seed: 2069.4182,
+    position: [0, 5, 0],
+  },*/
+  {
+    id: ulid(),
+    type: PlanetType.Star,
+    seed: 3245,
     position: [0, 0, 0],
   },
 ]);
