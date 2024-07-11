@@ -11,7 +11,7 @@ export type PlanetAtom = {
 };
 
 export const planetAtom = atom<PlanetAtom[]>([
-  {
+  /*{
     id: ulid(),
     type: PlanetType.GasGiant,
     seed: 795,
@@ -28,11 +28,11 @@ export const planetAtom = atom<PlanetAtom[]>([
     type: PlanetType.GasGiant,
     seed: 9070,
     position: [-9, 0, -5],
-  },
+  },*/
   {
     id: ulid(),
     type: PlanetType.Dwarf,
-    seed: 2771.9545,
+    seed: 2069.4182,
     position: [0, 0, 0],
   },
 ]);
