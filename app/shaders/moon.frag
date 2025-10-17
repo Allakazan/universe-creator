@@ -9,7 +9,6 @@ varying vec2 v_uv;
 varying vec3 v_position;
 varying vec3 v_normal;
 varying mat4 v_modelViewMatrix;
-varying vec4 v_glPosition;
 
 uniform float u_time;
 

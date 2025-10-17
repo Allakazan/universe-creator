@@ -12,6 +12,7 @@ import { hsvToRgb } from "~/helpers/color.helpers";
 export function Star({ id }: PlanetGeneralProps) {
   const planets = useAtomValue(planetAtom);
   const [planet, setPlanet] = useState<PlanetAtom | null>(null);
+  const [size, setSize] = useState<number>(0);
 
   const uniforms = useMemo<{ [key: string]: IUniform<any> }>(() => {
     const data = planets.find((planet) => planet.id === id);
@@ -33,28 +34,21 @@ export function Star({ id }: PlanetGeneralProps) {
           method: rng.nextInt(1, 2),
           octaves: 8,
           amplitude: rng.next(2, 4),
-          frequency: rng.next(4, 6),
+          frequency: rng.next(0.2, 0.4),
           persistence: rng.next(0.5, 0.7),
           lacunarity: 2,
         },
       },
     };
 
-    console.log(data.seed, uni);
+    setSize(rng.next(10, 30));
+
+    //console.log(data.seed, uni);
 
     return uni;
   }, [planets]);
 
   return (
-    <>
-      {planet && (
-        <PlanetBase
-          fragment={fragment}
-          seed={planet.seed}
-          uniforms={uniforms}
-          position={planet.position}
-        />
-      )}
-    </>
+    <>{planet && <PlanetBase {...planet} fragment={fragment} uniforms={uniforms} size={size} />}</>
   );
 }

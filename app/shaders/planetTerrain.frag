@@ -12,8 +12,8 @@ precision highp float;
 varying vec2 v_uv;
 varying vec3 v_position;
 varying vec3 v_normal;
+varying mat3 v_normalMatrix;
 varying mat4 v_modelViewMatrix;
-varying vec4 v_glPosition;
 
 uniform float u_time;
 uniform NoiseParams noiseParams;
@@ -26,11 +26,10 @@ uniform int stretch;
 uniform vec3 color1;
 uniform vec3 color2;
 uniform vec3 color3;
+uniform vec3 atmosphereColor;
 
 // Gas Giant: (PERLIN, NOISE_SQUARED, seed, 8, 2.0, 1.0, 0.5, 2.0) / 2.0
 // Moon Base: (NOISE, NOISE_SQUARED, seed, 8, 2.0, 1.0, 0.5, 2.0) / 1.8
-// Star: (SIMPLEX, NOISE_SQUARED, seed, 8, 2.0, 1.0, 0.5, 2.0)) smoothstep(0.3, 1., terrain)
-// Cool Star: (SIMPLEX, NOISE_ABS, seed, 8, 4.0, 2.0, 0.5, 2.0)
 
 void main() {
 
@@ -55,7 +54,10 @@ void main() {
     color = mix(color3, color, smoothstep(0., 1., getNoise(pos, seed + 100., noiseParams2)));
   }
   
-  vec3 normalMap = perturbNormalArb(pos, v_normal, seed, bumpStrength, noise1ParamsNormal);
+  float intensity = 1.4 - dot( normalize(v_normalMatrix * v_normal), vec3( 0.0, 0.0, 1.0 ) );
+  vec3 atmosphere = atmosphereColor * pow(intensity, 5.0);
+
+  vec3 normalMap = perturbNormalArb(-pos, v_normal, seed, bumpStrength, noise1ParamsNormal);
   // N_ is orthogonal to N.
   vec3 N_ = normalMap - (dot(normalMap, v_normal) * v_normal);
   
@@ -64,5 +66,5 @@ void main() {
 
   csm_Metalness = 0.2;
   csm_Roughness = .8;
-  csm_DiffuseColor = vec4(color, 1.0);
+  csm_DiffuseColor = vec4(color + atmosphere, 1.0);
 }

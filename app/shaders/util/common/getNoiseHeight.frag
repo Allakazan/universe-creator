@@ -23,7 +23,9 @@ vec3 perturbNormalArb(vec3 pos, vec3 surf_norm, float seed, float bumpStrength, 
   vec3 R1 = cross(vSigmaY, vN);
   vec3 R2 = cross(vN, vSigmaX);
 
-  float fDet = dot(vSigmaX, R1) * 1.0; // face_direction
+  float faceDir = gl_FrontFacing ? 1.0 : -1.0;
+
+  float fDet = dot(vSigmaX, R1) * faceDir; // face_direction
 
   vec3 vGrad = sign(fDet) * (dHdxy.x * R1 + dHdxy.y * R2);
   return normalize(abs(fDet) * surf_norm - vGrad);

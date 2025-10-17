@@ -12,6 +12,7 @@ import { hsvToRgb } from "~/helpers/color.helpers";
 export function GasGiant({ id }: PlanetGeneralProps) {
   const planets = useAtomValue(planetAtom);
   const [planet, setPlanet] = useState<PlanetAtom | null>(null);
+  const [size, setSize] = useState<number>(0);
 
   const uniforms = useMemo<{ [key: string]: IUniform<any> }>(() => {
     const data = planets.find((planet) => planet.id === id);
@@ -52,20 +53,12 @@ export function GasGiant({ id }: PlanetGeneralProps) {
     };
 
     console.log(data.seed, uni);
+    setSize(rng.next(3, 3.6));
 
     return uni;
   }, [planets]);
 
   return (
-    <>
-      {planet && (
-        <PlanetBase
-          fragment={fragment}
-          seed={planet.seed}
-          uniforms={uniforms}
-          position={planet.position}
-        />
-      )}
-    </>
+    <>{planet && <PlanetBase {...planet} fragment={fragment} uniforms={uniforms} size={size} />}</>
   );
 }

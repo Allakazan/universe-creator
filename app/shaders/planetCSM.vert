@@ -9,16 +9,13 @@ precision highp float;
 
 varying vec3 v_position;
 varying vec3 v_normal;
+varying mat3 v_normalMatrix;
 varying mat4 v_modelViewMatrix;
 varying vec4 v_glPosition;
-varying float v_height;
 varying vec2 v_uv;
 
 vec3 displace(vec3 point) {
   float noise = noise(position * 3.0);
-
-  v_height = noise;
-
   return position + normal * noise * 0.1; 
 }
 
@@ -26,6 +23,7 @@ void main() {
   v_uv = uv; 
   v_normal = normal;
   v_position = position; //displace(position);
+  v_normalMatrix = normalMatrix;
   v_modelViewMatrix = modelViewMatrix;
   v_glPosition = projectionMatrix * modelViewMatrix * vec4(v_position, 1.0);
   

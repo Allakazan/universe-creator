@@ -1,48 +1,114 @@
 import * as THREE from "three";
 import { useFrame, Vector3 } from "@react-three/fiber";
-import { useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CustomShaderMaterial from "three-custom-shader-material";
 
 import vertex from "~/shaders/planetCSM.vert";
 
+import atmosFrag from "~/shaders/atmosphere.frag";
+import atmosVert from "~/shaders/atmosphere.vert";
+import { getOrbitalPosition } from "~/helpers/three.helpers";
+import { OrbitRing } from "../OrbitRing";
+import { useAtom } from "jotai";
+import { planetAtom, PlanetAtom, selectedPlanetAtom } from "../atoms/planet.atom";
+
 export type PlanetBaseProps = {
   fragment: string;
-  position: Vector3;
   uniforms: { [key: string]: THREE.IUniform<any> };
-  seed: number;
-};
+  size: number;
+} & PlanetAtom;
 
-export function PlanetBase({ uniforms, seed, position, fragment }: PlanetBaseProps) {
+export function PlanetBase({ uniforms, size, fragment, ...planetData }: PlanetBaseProps) {
+  const { id, seed, distance, angle, inclination } = planetData;
+
+  const groupRef = useRef<THREE.Group>(null!);
+  const angleRef = useRef(angle);
+
   const meshRef = useRef<THREE.Mesh>(null!);
-  //const materialRef = useRef<THREE.Material>(null!);
 
-  useFrame(({ camera, clock }, delta) => {
-    if (!meshRef.current) return;
+  const [__, setPlanets] = useAtom(planetAtom);
+  const [_, setSelectedPlanet] = useAtom(selectedPlanetAtom);
 
-    //meshRef.current.rotation.y += delta * 0.1;
-    //meshRef.current.rotation.x += delta * 0.2;
+  const mergedUniforms = useMemo(
+    () => ({
+      ...uniforms,
+      seedValue: { value: seed },
+      u_time: { value: 0 },
+    }),
+    [uniforms, seed]
+  );
 
-    const material = meshRef.current.material as THREE.ShaderMaterial;
+  useEffect(() => {
+    setPlanets((prev) =>
+      prev.map((planet) => (planet.id === id ? { ...planet, ref: groupRef.current } : planet))
+    );
+  }, []);
 
-    material.uniforms.u_time.value = clock.getElapsedTime();
+  useFrame(({ clock }, delta) => {
+    if (!groupRef.current) return;
+
+    // avance o ângulo sem setState
+    angleRef.current += delta * 0.02;
+
+    const pos = getOrbitalPosition(
+      new THREE.Vector3(0, 0, 0),
+      distance,
+      angleRef.current,
+      inclination
+    );
+    groupRef.current.position.copy(pos);
+
+    // atualize uniform sem re-render
+    const mat = meshRef.current.material as THREE.ShaderMaterial;
+    if (mat?.uniforms?.u_time) mat.uniforms.u_time.value = clock.getElapsedTime();
   });
+
   return (
-    <mesh ref={meshRef} position={position} scale={1.5}>
-      <sphereGeometry args={[1.5, 60, 60]} />
-      <CustomShaderMaterial
-        //ref={materialRef}
-        silent
-        baseMaterial={THREE.MeshPhysicalMaterial}
-        //specularIntensity={0.1}
-        //reflectivity={0.5}
-        fragmentShader={fragment}
-        vertexShader={vertex}
-        uniforms={{
-          ...uniforms,
-          seedValue: { value: seed },
-          u_time: { value: 0 },
-        }}
-      />
-    </mesh>
+    <>
+      <OrbitRing radius={distance} inclination={inclination} />
+      <group ref={groupRef}>
+        <mesh
+          ref={meshRef}
+          onClick={(e) => {
+            e.stopPropagation();
+
+            if (groupRef.current)
+              setSelectedPlanet({
+                ...planetData,
+                mesh: groupRef.current,
+              });
+          }}
+        >
+          <sphereGeometry args={[size, 30, 30]} />
+          <CustomShaderMaterial
+            //ref={materialRef}
+            silent
+            baseMaterial={THREE.MeshPhysicalMaterial}
+            //specularIntensity={0.1}
+            //reflectivity={0.5}
+            fragmentShader={fragment}
+            vertexShader={vertex}
+            uniforms={mergedUniforms}
+          />
+        </mesh>
+        <mesh>
+          <sphereGeometry args={[size * 1.13, 20, 20]} />
+          <shaderMaterial
+            fragmentShader={atmosFrag}
+            vertexShader={atmosVert}
+            transparent={true}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+            side={THREE.BackSide}
+            uniforms={{
+              atmOpacity: { value: 0.6 },
+              atmPowFactor: { value: 3.0 },
+              atmMultiplier: { value: 9 },
+              glowColor: { value: (mergedUniforms as any).color1.value },
+            }}
+          />
+        </mesh>
+      </group>
+    </>
   );
 }

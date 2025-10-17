@@ -12,7 +12,6 @@ varying vec2 v_uv;
 varying vec3 v_position;
 varying vec3 v_normal;
 varying mat4 v_modelViewMatrix;
-varying vec4 v_glPosition;
 
 uniform float u_time;
 uniform NoiseParams noiseParams;
@@ -28,8 +27,8 @@ void main() {
 
   float seed = salt(seedValue);
   vec3 pos = v_position;
-  pos.x += u_time * .01;
-  pos.yz -= u_time * .01;
+  pos.x += u_time * .1;
+  pos.yz -= u_time * .1;
 
   float terrain = getNoise(pos, seed, noiseParams) / (noiseParams.amplitude * .5);
   
